@@ -29,14 +29,15 @@ class MainActivity : AppCompatActivity(), CallListener {
 
         binding.rvCallList.adapter = adapter
 
-
-        adapter.submitList(getCallLogs())
-
         if (ContextCompat.checkSelfPermission(
                 this,
                 android.Manifest.permission.READ_CALL_LOG
             ) == PackageManager.PERMISSION_GRANTED
         ) {
+            // Fetch current calls
+            adapter.submitList(getCallLogs())
+
+            // Observe for future calls
             observeCalls()
         } else {
             ActivityCompat.requestPermissions(
@@ -55,6 +56,10 @@ class MainActivity : AppCompatActivity(), CallListener {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 101) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Fetch current calls
+                adapter.submitList(getCallLogs())
+
+                // Observe for future calls
                 observeCalls()
             }
         }
@@ -91,7 +96,7 @@ class MainActivity : AppCompatActivity(), CallListener {
 
         val cursor = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val selectionBundle = bundleOf(
-                ContentResolver.QUERY_ARG_LIMIT to 20,
+                ContentResolver.QUERY_ARG_LIMIT to 6,
                 ContentResolver.QUERY_ARG_SORT_COLUMNS to arrayOf(CallLog.Calls.DATE),
                 ContentResolver.QUERY_ARG_SORT_DIRECTION to ContentResolver.QUERY_SORT_DIRECTION_DESCENDING
             )
@@ -123,12 +128,7 @@ class MainActivity : AppCompatActivity(), CallListener {
                         it.getLong(idIndex),
                         it.getString(nameIndex),
                         it.getLong(dateIndex),
-                        when (it.getString(typeIndex).toInt()) {
-                            CallLog.Calls.OUTGOING_TYPE -> CallType.OUTGOING
-                            CallLog.Calls.INCOMING_TYPE -> CallType.INCOMING
-                            CallLog.Calls.MISSED_TYPE -> CallType.MISSED
-                            else -> CallType.OTHERS
-                        }
+                        it.getInt(typeIndex)
                     )
                 )
             }

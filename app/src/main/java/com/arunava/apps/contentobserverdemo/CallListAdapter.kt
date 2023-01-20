@@ -1,5 +1,6 @@
 package com.arunava.apps.contentobserverdemo
 
+import android.provider.CallLog
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -17,9 +18,7 @@ class CallListAdapter : ListAdapter<MyCallLog, CallListAdapter.CallViewHolder>(c
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CallViewHolder {
         return CallViewHolder(
             ItemCallLogBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
+                LayoutInflater.from(parent.context), parent, false
             )
         )
     }
@@ -38,12 +37,12 @@ class CallListAdapter : ListAdapter<MyCallLog, CallListAdapter.CallViewHolder>(c
         }
     }
 
-    private fun getTypeBasedResource(type: CallType): Int {
-        return when(type) {
-            CallType.INCOMING -> R.drawable.ic_call_received
-            CallType.OUTGOING -> R.drawable.ic_call_made
-            CallType.MISSED -> R.drawable.ic_call_missed
-            CallType.OTHERS -> R.drawable.unknown_med
+    private fun getTypeBasedResource(type: Int): Int {
+        return when (type) {
+            CallLog.Calls.INCOMING_TYPE -> R.drawable.ic_call_received
+            CallLog.Calls.OUTGOING_TYPE -> R.drawable.ic_call_made
+            CallLog.Calls.MISSED_TYPE -> R.drawable.ic_call_missed
+            else -> R.drawable.unknown_med
         }
     }
 
@@ -64,9 +63,7 @@ class CallListAdapter : ListAdapter<MyCallLog, CallListAdapter.CallViewHolder>(c
             }
 
             override fun areContentsTheSame(oldItem: MyCallLog, newItem: MyCallLog): Boolean {
-                return oldItem.id == newItem.id
-                        && oldItem.number == newItem.number
-                        && oldItem.date == newItem.date
+                return oldItem.id == newItem.id && oldItem.number == newItem.number && oldItem.date == newItem.date
             }
         }
     }

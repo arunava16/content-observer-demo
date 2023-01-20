@@ -4,7 +4,5 @@ data class MyCallLog(
     val id: Long,
     val number: String,
     val date: Long,
-    val type:CallType
+    val type: Int
 )
-
-enum class CallType { INCOMING, OUTGOING, MISSED, OTHERS }
